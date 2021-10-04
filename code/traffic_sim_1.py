@@ -1,26 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Aug 29 17:57:05 2017
-
-@author: apex
-
-++++++++++++++++++
-Refactoring:
-    Use car ref directly instead of cid !!
-Changes:
-1) Entry rules?
-2)     
-Additions:
-1) Statistics: 
-avg car speed per lane, per segment, over time
-Car getting too close: where, lane, speed, distance
-2) Lane change
-3) Entrance
-4) bi-directional
-5) Add a "freeze" feature
-6) dashed-line between lanes
-7) yellow lines at the edge of roads
-
 """
 
 from enum import Enum, unique
