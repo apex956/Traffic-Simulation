@@ -7,22 +7,17 @@ from enum import Enum, unique
 import random
 import pygame
 import numpy as np
-import constant
+from constant import Color
 
-# ==============================================================================
-# ---- class TrafficSimulation ----
-#
-# This is the main class for running the simulation
-# ==============================================================================
-class TrafficSimulation():
+
+class TrafficSimulation:
+    """      This is the main class for running the simulation     """
+
     list_of_roads = []
-    speed_factor = 50  # slow down the simulation by increasing this factor
-# ==============================================================================
-#     
-# ==============================================================================
+    speed_factor = 40  # slow down the simulation by increasing this factor
+
     @classmethod
     def initialize_simulation(cls):
-
         # create a single car factory
         cls.car_factory = Car_factory()
 
@@ -30,6 +25,7 @@ class TrafficSimulation():
         # length and width of roads and lanes are in meters
         # Speed is in km/hr
         length = 1500  # total length of road [m] corresponds to 5 segments
+
         # spec of speed limits on road: (from, to, speed in km/hr)
         speed_spec1 = [(0, length/2, 120),  # for the 1st half of the road the legal speed limit in 120 km/hr
                        (length/2, length*3/4, 120),
@@ -49,15 +45,10 @@ class TrafficSimulation():
         control_center = ControlCenter()
         control_center.run_control_center()
 
-# ==============================================================================
-#     ---- class Road ----
-# ==============================================================================
 
-class Road():
-    
-#==============================================================================
-#
-#==============================================================================
+class Road:
+    """ ---- class Road ---- """
+
     def __init__(self, **args):
         self.label = args.get("label")
         self.length = args.get("length")
@@ -70,29 +61,23 @@ class Road():
         for lane_idx in range(self.no_of_lanes):
             self.list_of_lanes.append(Lane(lane_idx, 0))
         self.disturb_500 = False   # used to simulate disturbances on the road
-#==============================================================================
-#   ---- class Lane ----         
-#==============================================================================
 
-class Lane():
+
+class Lane:
+    """ ---- class Lane ---- """
     
-#==============================================================================
-#     
-#==============================================================================
     def __init__(self, rl_loc, direction):
         self.rl_loc = rl_loc
         self.direction = direction
-        self.color = constant.Color.BLACK
+        self.color = Color.BLACK
                
-        self.list_of_vehicles = {} # a dictionary with car ID as key
-        self.last_vehicle = None  #  the last vehicle on the road
-        self.first_vehicle = None  #  the first vehicle on the road
+        self.list_of_vehicles = {}  # a dictionary with car ID as key
+        self.last_vehicle = None  # the last vehicle on the road
+        self.first_vehicle = None  # the first vehicle on the road
         self.entry_dist = 30  # [m] basic distance of entering car from car ahead
         self.delay_index = 0  # used to slow the variability
         self.entry_var = 0  # variability of entry distance
-#==============================================================================
-#         
-#==============================================================================
+
     def move_vehicles(self, road):
         car_factory = TrafficSimulation.car_factory
 
@@ -144,11 +129,10 @@ class Lane():
             # delete from dictionary for lane
             del self.list_of_vehicles[car.cid]
 
-#==============================================================================
-#     ----   class Car ----
-#==============================================================================
 
 class Car(object):
+    """----   class Car ---- """
+
     def __init__(self, cid, color, length, width, policy):
         self.width = width  # [m]
         self.cid = cid
@@ -161,9 +145,7 @@ class Car(object):
         self.dist_factor = 1
         self.speed_limit_factor = 1
         self.start_timer = 0
-#==============================================================================
-# 
-#==============================================================================
+
     def set_car_on_road(self, road, lane, loc, speed, cid_of_car_ahead):
         self.road = road
         self.lane = lane
@@ -174,12 +156,13 @@ class Car(object):
             self.loc_of_car_ahead = None
             self.speed_of_car_ahead = 150
         self.breaks = False
-#==============================================================================
-#  Calculate car new location and speed
-#  Speed is calculated several ways and overrides previous calculations
-#  For example, speed limit overrides large distance from car ahead
-#==============================================================================
+
     def calc_car_params(self):
+        """
+        Calculate car new location and speed
+        Speed is calculated several ways and overrides previous calculations
+        For example, speed limit overrides large distance from car ahead
+        """
         self.breaks = False
         speed = self.speed
 
@@ -337,18 +320,18 @@ class Car_factory():
         if random.choice(range(Car_factory.bus_truck_choice)) == 1:
             length = random.choice([9, 10, 11])
             width = 3
-            color = random.choice([constant.Color.RED, constant.Color.GREEN,
-                               constant.Color.YELLOW, constant.Color.WHITE,
-                               constant.Color.SGI_GRAY_52,  constant.Color.SILVER])
+            color = random.choice([Color.RED, Color.GREEN,
+                               Color.YELLOW, Color.WHITE,
+                               Color.SGI_GRAY_52,  Color.SILVER])
         else: # regulaer car
             length = random.choice([4.5, 5.0, 5.5, 6.0])
             width = random.choice([2.2, 2.5])
-            color = random.choice([constant.Color.BLUE, constant.Color.GREEN,
-                                   constant.Color.YELLOW, constant.Color.WHITE,
-                                   constant.Color.RED, constant.Color.CRIMSON,
-                                   constant.Color.MAGENTA, constant.Color.SGI_GRAY_52,
-                                   constant.Color.ORANGE, constant.Color.SILVER,
-                                   constant.Color.TURQUOISE])
+            color = random.choice([Color.BLUE, Color.GREEN,
+                                   Color.YELLOW, Color.WHITE,
+                                   Color.RED, Color.CRIMSON,
+                                   Color.MAGENTA, Color.SGI_GRAY_52,
+                                   Color.ORANGE, Color.SILVER,
+                                   Color.TURQUOISE])
             # a small car
             if length <= 4.5:
                 width = 2
@@ -371,7 +354,7 @@ class ControlCenter():
         self.road_seg_gap = 40    # pixels
         self.intra_road_gap = 100    # pixels
         self.line_width = 1  # pixels
-        self.line_color = constant.Color.WHITE
+        self.line_color = Color.WHITE
 
 #==============================================================================
 #         Meters to pixels
@@ -406,7 +389,7 @@ class ControlCenter():
         font = pygame.font.SysFont('Calibri', 25, True, False)
         # Render the text. "True" means anti-aliased text.
         text = font.render("Simple Traffic Simulation", True,
-                           constant.Color.BLACK)
+                           Color.BLACK)
 
         # define starting point of each road segment
         road_start_x = []
@@ -432,7 +415,7 @@ class ControlCenter():
                 if event.type == pygame.QUIT:
                     done = True
 
-            screen.fill(constant.Color.FOREST_GREEN)
+            screen.fill(Color.FOREST_GREEN)
 
             # --- Drawing code should go here
             # Put the text at center of screen
@@ -477,7 +460,7 @@ class ControlCenter():
                                          self.line_width)
 
                         #draw milestones
-                        txt_color = constant.Color.WHITE
+                        txt_color = Color.WHITE
                         font = pygame.font.SysFont('Calibri', 18, True, False)
                         ms_width = self.line_width+2
                         ms_height = 10
@@ -539,7 +522,7 @@ class ControlCenter():
                         y_loc = 185
                         base = 30
                         height = 20
-                        pygame.draw.polygon(screen, constant.Color.RED,
+                        pygame.draw.polygon(screen, Color.RED,
                                             [[x_loc, y_loc], 
                                              [x_loc + base, y_loc], 
                                              [x_loc + (base/2), y_loc-height]], 0)
@@ -591,11 +574,11 @@ class ControlCenter():
                         break_y_p = 4
                         break_x_ext_p = 2
                         if car.breaks is True:
-                            pygame.draw.rect(screen, constant.Color.RED,
+                            pygame.draw.rect(screen, Color.RED,
                                              [car_start_x-break_x_ext_p,
                                               car_start_y,
                                               break_x_p, break_y_p])
-                            pygame.draw.rect(screen, constant.Color.RED,
+                            pygame.draw.rect(screen, Color.RED,
                                              [car_start_x-break_x_ext_p,
                                              car_start_y+car_width-break_y_p,
                                              break_x_p, break_y_p])
