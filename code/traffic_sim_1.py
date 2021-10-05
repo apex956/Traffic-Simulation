@@ -7,26 +7,7 @@ from enum import Enum, unique
 import random
 import pygame
 import numpy as np
-
-# ==============================================================================
-# ---- class Color ----
-# encoded as RGB
-# ==============================================================================
-@unique
-class Color (Enum):
-    BLACK  = (0, 0, 0)
-    WHITE  = (255, 255, 255)
-    GREEN  = (0, 255, 0)
-    RED    = (255, 0, 0)
-    BLUE   = (0, 0, 255)
-    YELLOW = (255, 255, 0)
-    FOREST_GREEN = (34, 139, 34)
-    CRIMSON = (220, 20, 60)
-    MAGENTA = (255, 0, 255)
-    SGI_GRAY_52 = (132, 132, 132)
-    ORANGE = (255, 128, 0)
-    TURQUOISE = (64, 224, 208)
-    SILVER = (192, 192, 192)
+import constant
 
 # ==============================================================================
 # ---- class TrafficSimulation ----
@@ -101,7 +82,7 @@ class Lane():
     def __init__(self, rl_loc, direction):
         self.rl_loc = rl_loc
         self.direction = direction
-        self.color = Color.BLACK.value
+        self.color = constant.Color.BLACK
                
         self.list_of_vehicles = {} # a dictionary with car ID as key
         self.last_vehicle = None  #  the last vehicle on the road
@@ -356,18 +337,18 @@ class Car_factory():
         if random.choice(range(Car_factory.bus_truck_choice)) == 1:
             length = random.choice([9, 10, 11])
             width = 3
-            color = random.choice([Color.RED.value, Color.GREEN.value,
-                               Color.YELLOW.value, Color.WHITE.value,
-                               Color.SGI_GRAY_52.value,  Color.SILVER.value])
+            color = random.choice([constant.Color.RED, constant.Color.GREEN,
+                               constant.Color.YELLOW, constant.Color.WHITE,
+                               constant.Color.SGI_GRAY_52,  constant.Color.SILVER])
         else: # regulaer car
             length = random.choice([4.5, 5.0, 5.5, 6.0])
             width = random.choice([2.2, 2.5])
-            color = random.choice([Color.BLUE.value, Color.GREEN.value,
-                                   Color.YELLOW.value, Color.WHITE.value,
-                                   Color.RED.value, Color.CRIMSON.value,
-                                   Color.MAGENTA.value, Color.SGI_GRAY_52.value,
-                                   Color.ORANGE.value, Color.SILVER.value,
-                                   Color.TURQUOISE.value])
+            color = random.choice([constant.Color.BLUE, constant.Color.GREEN,
+                                   constant.Color.YELLOW, constant.Color.WHITE,
+                                   constant.Color.RED, constant.Color.CRIMSON,
+                                   constant.Color.MAGENTA, constant.Color.SGI_GRAY_52,
+                                   constant.Color.ORANGE, constant.Color.SILVER,
+                                   constant.Color.TURQUOISE])
             # a small car
             if length <= 4.5:
                 width = 2
@@ -390,7 +371,7 @@ class ControlCenter():
         self.road_seg_gap = 40    # pixels
         self.intra_road_gap = 100    # pixels
         self.line_width = 1  # pixels
-        self.line_color = Color.WHITE.value
+        self.line_color = constant.Color.WHITE
 
 #==============================================================================
 #         Meters to pixels
@@ -425,7 +406,7 @@ class ControlCenter():
         font = pygame.font.SysFont('Calibri', 25, True, False)
         # Render the text. "True" means anti-aliased text.
         text = font.render("Simple Traffic Simulation", True,
-                           Color.BLACK.value)
+                           constant.Color.BLACK)
 
         # define starting point of each road segment
         road_start_x = []
@@ -451,7 +432,7 @@ class ControlCenter():
                 if event.type == pygame.QUIT:
                     done = True
 
-            screen.fill(Color.FOREST_GREEN.value)
+            screen.fill(constant.Color.FOREST_GREEN)
 
             # --- Drawing code should go here
             # Put the text at center of screen
@@ -496,7 +477,7 @@ class ControlCenter():
                                          self.line_width)
 
                         #draw milestones
-                        txt_color = Color.WHITE.value
+                        txt_color = constant.Color.WHITE
                         font = pygame.font.SysFont('Calibri', 18, True, False)
                         ms_width = self.line_width+2
                         ms_height = 10
@@ -558,7 +539,7 @@ class ControlCenter():
                         y_loc = 185
                         base = 30
                         height = 20
-                        pygame.draw.polygon(screen, Color.RED.value,
+                        pygame.draw.polygon(screen, constant.Color.RED,
                                             [[x_loc, y_loc], 
                                              [x_loc + base, y_loc], 
                                              [x_loc + (base/2), y_loc-height]], 0)
@@ -610,11 +591,11 @@ class ControlCenter():
                         break_y_p = 4
                         break_x_ext_p = 2
                         if car.breaks is True:
-                            pygame.draw.rect(screen, Color.RED.value,
+                            pygame.draw.rect(screen, constant.Color.RED,
                                              [car_start_x-break_x_ext_p,
                                               car_start_y,
                                               break_x_p, break_y_p])
-                            pygame.draw.rect(screen, Color.RED.value,
+                            pygame.draw.rect(screen, constant.Color.RED,
                                              [car_start_x-break_x_ext_p,
                                              car_start_y+car_width-break_y_p,
                                              break_x_p, break_y_p])
