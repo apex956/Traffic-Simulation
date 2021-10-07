@@ -7,7 +7,7 @@ from enum import Enum, unique
 import random
 import pygame
 import numpy as np
-from constant import Color
+from constant import Color, Const
 
 
 class TrafficSimulation:
@@ -19,26 +19,17 @@ class TrafficSimulation:
     @classmethod
     def initialize_simulation(cls):
         # create a single car factory
-        cls.car_factory = Car_factory()
+        cls.car_factory = CarFactory()
 
         # create roads
         # length and width of roads and lanes are in meters
         # Speed is in km/hr
-        length = 1500  # total length of road [m] corresponds to 5 segments
+        length = Const.TOTAL_LENGTH_OF_5_SEG_ROAD
 
-        # spec of speed limits on road: (from, to, speed in km/hr)
-        speed_spec1 = [(0, length/2, 120),  # for the 1st half of the road the legal speed limit in 120 km/hr
-                       (length/2, length*3/4, 120),
-                       (length*3/4, length, 120)]
-
-        speed_spec2 = [(0, length/2, 100),
-                       (length/2, length*3/4, 80),
-                       (length*3/4, length, 100)]
-        
         road = Road(label="Main Highway", length=length,
                     no_of_lanes=3, lane_width=4,
                     directionality="uni", exit_loc=[length],
-                    entry_loc=[0], speed_spec=speed_spec2)
+                    entry_loc=[0], speed_spec=Const.USED_SPEED_SPEC)
         cls.list_of_roads.append(road)  # add 1st road to list
 
         # create a control center
@@ -99,10 +90,10 @@ class Lane:
 
         # Add a new vehicle
         self.delay_index += 1
-        if (self.delay_index % 60 == 0):
+        if self.delay_index % 60 == 0:
             self.entry_var = random.randrange(int(-self.entry_dist/2),
                                               int(self.entry_dist/2))
-        if (self.last_vehicle.loc >= (self.entry_dist + self.entry_var)):
+        if self.last_vehicle.loc >= (self.entry_dist + self.entry_var):
             car = car_factory.create_random_vehicle()
             loc = -car.length
             speed = self.last_vehicle.speed  # km/hr
@@ -184,7 +175,7 @@ class Car(object):
         else:
             actual_dist = self.road.length  # unlimited
 
-# DEBUG
+        # DEBUG
         if self.cid == 1000000 and self.dbg_delay_index % 100 == 0:
             print("------------------------")
             print("DEBUG: Car cid : ", self.cid)
@@ -295,35 +286,31 @@ class Car(object):
         speed_m_p_s /= TrafficSimulation.speed_factor
         self.loc += speed_m_p_s
 
-#==============================================================================
-# ---- class Car_factory ----
-#There are three typea of cars: bus/truck, regular, small.
-# only a small proportion of vehicles are buses or trucks
-# length and width are in meters
 
-#==============================================================================
-
-class Car_factory():
-    "this is a docstring"
+class CarFactory():
+    """  ---- class CarFactory ----
+    There are three typeS of cars: bus/truck, regular, small.
+    only a small proportion of vehicles are buses or trucks
+    length and width are in meters
+    """
     cid = 0
     bus_truck_choice = 12 # one vehicle out of this number is a truck or a bus
+
     def __init__(self):
         pass
 
-#==============================================================================
-#  random color, length, behavior (policy)
-#==============================================================================
     def create_random_vehicle(self):
-        Car_factory.cid += 1
-        cid = Car_factory.cid
+        """random color, length, behavior (policy)"""
+        CarFactory.cid += 1
+        cid = CarFactory.cid
         # a bus or truck
-        if random.choice(range(Car_factory.bus_truck_choice)) == 1:
+        if random.choice(range(CarFactory.bus_truck_choice)) == 1:
             length = random.choice([9, 10, 11])
             width = 3
             color = random.choice([Color.RED, Color.GREEN,
                                Color.YELLOW, Color.WHITE,
                                Color.SGI_GRAY_52,  Color.SILVER])
-        else: # regulaer car
+        else:  # regular car
             length = random.choice([4.5, 5.0, 5.5, 6.0])
             width = random.choice([2.2, 2.5])
             color = random.choice([Color.BLUE, Color.GREEN,
@@ -340,15 +327,12 @@ class Car_factory():
         car = Car(cid, color, length, width, policy)
         return car
 
-#==============================================================================
-#     ---- class ControlCenter ----
-#==============================================================================
 
 class ControlCenter():
+    """---- class ControlCenter ----
+    Each road segment is 300 meters
+    """
 
-#==============================================================================
-#     Each road segment is 300 meters
-#==============================================================================
     def __init__(self):
         self.NO_OF_ROAD_SEGMENTS = 5
         self.road_seg_gap = 40    # pixels
@@ -356,16 +340,11 @@ class ControlCenter():
         self.line_width = 1  # pixels
         self.line_color = Color.WHITE
 
-#==============================================================================
-#         Meters to pixels
-#==============================================================================
     @classmethod
     def m_to_p(cls, meters):
+        """Meters to pixels"""
         return meters * 6
 
-#==============================================================================
-#
-#==============================================================================
     def run_control_center(self):
         pygame.init()
         screen_size = (1840, 800)  # pixels
@@ -378,8 +357,7 @@ class ControlCenter():
         done = False
 
         # sound effects
-        direct = "D:\Study\Computer Science\Python\My Projects\Traffic Simulation//"
-        pygame.mixer.music.load(direct+'traffic-13.mp3')
+        pygame.mixer.music.load('traffic-13.mp3')
         pygame.mixer.music.play(-1)
 
         # Used to manage how fast the screen updates
@@ -603,6 +581,7 @@ class ControlCenter():
 
         # Close the window and quit.
         pygame.quit()
+
 
 #==============================================================================
 #     Run the simulation
